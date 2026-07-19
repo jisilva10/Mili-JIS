@@ -1,20 +1,15 @@
 import { useState, useMemo, useRef } from 'react';
-import { ArrowLeft, Camera } from 'lucide-react';
+import { Camera } from 'lucide-react';
 import MemoryCard from '../components/MemoryCard';
 import CalendarView from '../components/CalendarView';
 import AddMemoryModal from '../components/AddMemoryModal';
 import BannerCropModal from '../components/BannerCropModal';
-import { format, isSameMonth, parseISO } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { supabase } from '../supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
 import defaultBannerImg from '../assets/banner.jpg';
 import './Memories.css';
 
-export default function Memories({ memories, addMemory, updateMemory, deleteMemory, bannerUrl, updateBanner }) {
-  const [viewMode, setViewMode] = useState('calendar'); // 'calendar' | 'feed'
-  const [selectedMonthDate, setSelectedMonthDate] = useState(null);
-  
+export default function Memories({ activeTab, memories, addMemory, updateMemory, deleteMemory, bannerUrl, updateBanner }) {
   // Modal states
   const [addingDate, setAddingDate] = useState(null);
   const [editingMemory, setEditingMemory] = useState(null);
@@ -23,11 +18,6 @@ export default function Memories({ memories, addMemory, updateMemory, deleteMemo
   const fileInputRef = useRef(null);
   const [selectedBannerImage, setSelectedBannerImage] = useState(null);
   const [isUploadingBanner, setIsUploadingBanner] = useState(false);
-
-  const handleMonthSelect = (date) => {
-    setSelectedMonthDate(date);
-    setViewMode('feed');
-  };
 
   const handleSaveMemory = (memoryData) => {
     if (editingMemory && updateMemory) {
@@ -45,7 +35,6 @@ export default function Memories({ memories, addMemory, updateMemory, deleteMemo
       const imageUrl = URL.createObjectURL(file);
       setSelectedBannerImage(imageUrl);
     }
-    // reset input
     e.target.value = null;
   };
 
@@ -82,21 +71,33 @@ export default function Memories({ memories, addMemory, updateMemory, deleteMemo
     }
   };
 
-  const filteredMemories = useMemo(() => {
-    if (viewMode === 'calendar' || !selectedMonthDate) return memories;
-    
-    return memories.filter(m => {
+  // Group memories by year
+  const groupedMemories = useMemo(() => {
+    const groups = {};
+    memories.forEach(m => {
+      let year;
       try {
-        const memDate = m.date.includes('-') && m.date.length === 10 ? parseISO(m.date) : new Date(m.date);
-        return isSameMonth(memDate, selectedMonthDate);
+        const d = m.date.includes('-') ? new Date(m.date + 'T00:00:00') : new Date(m.date);
+        year = d.getFullYear();
+        if (isNaN(year)) year = new Date().getFullYear();
       } catch (e) {
-        return false;
+        year = new Date().getFullYear();
       }
+      if (!groups[year]) groups[year] = [];
+      groups[year].push(m);
     });
-  }, [memories, viewMode, selectedMonthDate]);
+    
+    // Sort years descending
+    return Object.keys(groups)
+      .sort((a, b) => b - a)
+      .map(year => ({
+        year,
+        items: groups[year]
+      }));
+  }, [memories]);
 
   return (
-    <div className={`memories-page ${viewMode === 'calendar' ? 'no-scroll' : ''}`}>
+    <div className={`memories-page ${activeTab === 'calendar' ? 'no-scroll' : ''}`}>
       <div className="hero-banner">
         <img 
           src={bannerUrl || defaultBannerImg} 
@@ -122,48 +123,40 @@ export default function Memories({ memories, addMemory, updateMemory, deleteMemo
       </div>
 
       <header className="page-header">
-        {viewMode === 'feed' ? (
-          <div className="feed-header">
-            <button 
-              className="back-to-calendar-btn" 
-              onClick={() => setViewMode('calendar')}
-            >
-              <ArrowLeft size={20} />
-              <span>Volver al Calendario</span>
-            </button>
-            <h1 className="text-title" style={{ marginTop: '12px' }}>
-              {selectedMonthDate ? format(selectedMonthDate, 'MMMM yyyy', { locale: es }) : 'Historia'}
-            </h1>
-          </div>
-        ) : (
-          <>
-            <h1 className="text-title">Nuestra Historia</h1>
-            <p className="text-subtitle">Cada momento cuenta</p>
-          </>
-        )}
+        <h1 className="text-title">{activeTab === 'calendar' ? 'Nuestra Historia' : 'Nuestros Recuerdos'}</h1>
+        <p className="text-subtitle">{activeTab === 'calendar' ? 'Cada momento cuenta' : 'Un vistazo a todo lo que hemos vivido'}</p>
       </header>
 
-      {viewMode === 'calendar' ? (
+      {activeTab === 'calendar' ? (
         <CalendarView 
           memories={memories} 
-          onMonthSelect={handleMonthSelect} 
           onAddMemoryClick={(date) => setAddingDate(date)}
+          onEditMemoryClick={(memory) => setEditingMemory(memory)}
         />
       ) : (
         <div className="memories-feed">
-          {filteredMemories.length === 0 ? (
+          {groupedMemories.length === 0 ? (
             <div className="empty-state">
-              <p>No hay recuerdos para este mes.</p>
+              <p>No hay recuerdos guardados aún.</p>
               <p>¡Agrega recuerdos desde el calendario!</p>
             </div>
           ) : (
-            filteredMemories.map((memory) => (
-              <MemoryCard 
-                key={memory.id} 
-                memory={memory} 
-                onEdit={() => setEditingMemory(memory)}
-                onDelete={() => deleteMemory && deleteMemory(memory.id)}
-              />
+            groupedMemories.map((group) => (
+              <div key={group.year} className="year-group">
+                <div className="year-header glass">
+                  <h2>{group.year}</h2>
+                </div>
+                <div className="year-memories">
+                  {group.items.map((memory) => (
+                    <MemoryCard 
+                      key={memory.id} 
+                      memory={memory} 
+                      onEdit={() => setEditingMemory(memory)}
+                      onDelete={() => deleteMemory && deleteMemory(memory.id)}
+                    />
+                  ))}
+                </div>
+              </div>
             ))
           )}
         </div>

@@ -50,8 +50,7 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('assets', 'assets', true) 
 ON CONFLICT (id) DO NOTHING;
 
--- Enable RLS for objects
-ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+-- Note: Storage RLS is enabled by default in Supabase.
 
 -- Allow public access to read files
 CREATE POLICY "Public Read Access" 

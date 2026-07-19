@@ -13,10 +13,10 @@ import {
   parseISO
 } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { LayoutList, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import './CalendarView.css';
 
-export default function CalendarView({ memories, onMonthSelect, onAddMemoryClick }) {
+export default function CalendarView({ memories, onAddMemoryClick, onEditMemoryClick }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const getMemoryForDate = (date) => {
@@ -99,14 +99,17 @@ export default function CalendarView({ memories, onMonthSelect, onAddMemoryClick
             }`}
             key={day}
             onClick={() => {
-              if (isCurrentMonth && onAddMemoryClick) {
-                // Return YYYY-MM-DD to be consistent with DB
-                onAddMemoryClick(format(cloneDay, 'yyyy-MM-dd'));
+              if (isCurrentMonth) {
+                if (memory && onEditMemoryClick) {
+                  onEditMemoryClick(memory);
+                } else if (!memory && onAddMemoryClick) {
+                  onAddMemoryClick(format(cloneDay, 'yyyy-MM-dd'));
+                }
               }
             }}
           >
             <span className="calendar-date-number">{formattedDate}</span>
-            {isCurrentMonth && (
+            {isCurrentMonth && !memory && (
               <div className="cell-overlay-btn">
                 <Plus size={16} />
               </div>
@@ -133,14 +136,6 @@ export default function CalendarView({ memories, onMonthSelect, onAddMemoryClick
         {renderDays()}
         {renderCells()}
       </div>
-      
-      <button 
-        className="view-cards-btn"
-        onClick={() => onMonthSelect(currentMonth)}
-      >
-        <LayoutList size={20} />
-        Ver tarjetas de {format(currentMonth, 'MMMM', { locale: es })}
-      </button>
     </div>
   );
 }

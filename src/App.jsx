@@ -6,7 +6,8 @@ import { supabase } from './supabaseClient';
 import { format } from 'date-fns';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('memories');
+  const [activeTab, setActiveTab] = useState('calendar');
+
   const [memories, setMemories] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,6 +16,8 @@ function App() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // ... (keeping existing fetch and CRUD functions)
 
   const fetchData = async () => {
     setLoading(true);
@@ -45,13 +48,8 @@ function App() {
   };
 
   const addMemory = async (newMemory) => {
-    // Format date to YYYY-MM-DD for Supabase 'date' type if needed, 
-    // or keep it if it's already properly formatted.
-    // In our CompleteDateModal, we might need to send a valid date string.
-    // Let's ensure it's saved.
     let dateToSave = newMemory.date;
     try {
-      // If it's something like '14 Feb 2026', Supabase might reject it, so we should pass YYYY-MM-DD
       if (dateToSave && !dateToSave.includes('-')) {
          dateToSave = new Date().toISOString().split('T')[0];
       }
@@ -60,7 +58,7 @@ function App() {
     }
 
     const memoryData = {
-      image_url: newMemory.image, // mapping image -> image_url for DB
+      image_url: newMemory.image,
       note: newMemory.note,
       date: dateToSave,
       rating: newMemory.rating,
@@ -74,14 +72,11 @@ function App() {
       return;
     }
     if (data) {
-      setMemories([data[0], ...memories]);
+      setMemories([data[0], ...memories].sort((a, b) => new Date(b.date) - new Date(a.date)));
     }
   };
 
   const updateWishlist = async (newList) => {
-    // Since we receive the full list from the component (optimistic update),
-    // we need to find what changed, OR we can provide dedicated add/update functions.
-    // For simplicity, let's keep the local state updated immediately:
     setWishlist(newList);
   };
 
@@ -134,8 +129,9 @@ function App() {
           <div style={{ textAlign: 'center', marginTop: '40px', color: 'var(--color-text-muted)' }}>
             Cargando...
           </div>
-        ) : activeTab === 'memories' ? (
+        ) : activeTab === 'calendar' || activeTab === 'feed' ? (
           <Memories 
+            activeTab={activeTab}
             memories={memories} 
             addMemory={addMemory} 
             updateMemory={updateMemory}

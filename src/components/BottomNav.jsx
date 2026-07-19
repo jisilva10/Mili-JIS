@@ -1,17 +1,25 @@
-import { BookHeart, ListTodo } from 'lucide-react';
+import { CalendarDays, LayoutList, ListTodo } from 'lucide-react';
 import './BottomNav.css';
 
 export default function BottomNav({ activeTab, setActiveTab }) {
   return (
     <nav className="bottom-nav glass">
       <button 
-        className={`nav-item ${activeTab === 'memories' ? 'active' : ''}`}
-        onClick={() => setActiveTab('memories')}
+        className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`}
+        onClick={() => setActiveTab('calendar')}
       >
-        <BookHeart size={24} className="nav-icon" />
-        <span className="nav-label">Historia</span>
+        <CalendarDays size={24} className="nav-icon" />
+        <span className="nav-label">Calendario</span>
       </button>
       
+      <button 
+        className={`nav-item ${activeTab === 'feed' ? 'active' : ''}`}
+        onClick={() => setActiveTab('feed')}
+      >
+        <LayoutList size={24} className="nav-icon" />
+        <span className="nav-label">Tarjetas</span>
+      </button>
+
       <button 
         className={`nav-item ${activeTab === 'wishlist' ? 'active' : ''}`}
         onClick={() => setActiveTab('wishlist')}
