@@ -1,11 +1,11 @@
 .hero-banner {
-  margin: -24px -20px 24px -20px;
-  height: clamp(180px, 25vh, 240px);
+  margin-bottom: 24px;
+  height: clamp(160px, 22vh, 220px);
   overflow: hidden;
-  border-bottom-left-radius: var(--radius-xl);
-  border-bottom-right-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
   position: relative;
+  background: var(--color-surface);
 }
 
 .hero-banner::after {
