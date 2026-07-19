@@ -44,3 +44,31 @@ INSERT INTO app_settings (id, banner_url) VALUES (1, null);
 ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Enable all access for all users" ON app_settings FOR ALL USING (true) WITH CHECK (true);
 
+-- Storage configuration for 'assets' bucket
+-- This creates the bucket if it doesn't exist and makes it public
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('assets', 'assets', true) 
+ON CONFLICT (id) DO NOTHING;
+
+-- Enable RLS for objects
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+
+-- Allow public access to read files
+CREATE POLICY "Public Read Access" 
+ON storage.objects FOR SELECT 
+USING ( bucket_id = 'assets' );
+
+-- Allow public access to upload files
+CREATE POLICY "Public Upload Access" 
+ON storage.objects FOR INSERT 
+WITH CHECK ( bucket_id = 'assets' );
+
+-- Allow public access to update files
+CREATE POLICY "Public Update Access" 
+ON storage.objects FOR UPDATE 
+USING ( bucket_id = 'assets' );
+
+-- Allow public access to delete files
+CREATE POLICY "Public Delete Access" 
+ON storage.objects FOR DELETE 
+USING ( bucket_id = 'assets' );
