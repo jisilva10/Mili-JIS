@@ -1,12 +1,19 @@
 .hero-banner {
   margin: -24px -20px 24px -20px;
-  height: 200px;
+  height: clamp(180px, 25vh, 240px);
   overflow: hidden;
   border-bottom-left-radius: var(--radius-xl);
   border-bottom-right-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
-  transition: all 0.3s ease;
+  box-shadow: var(--shadow-lg);
   position: relative;
+}
+
+.hero-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.4) 100%);
+  pointer-events: none;
 }
 
 .edit-banner-btn {
@@ -164,12 +171,6 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-.memories-page.no-scroll .hero-banner {
-  flex-shrink: 0;
-  height: clamp(140px, 22vh, 200px); /* Taller banner as requested */
-  margin-bottom: 16px;
 }
 
 .memories-page.no-scroll .page-header {
