@@ -50,7 +50,7 @@ export default function AddMemoryModal({ date, existingMemory, onClose, onSave }
     }
 
     onSave({
-      image: finalImageUrl || 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=600&auto=format&fit=crop',
+      image: finalImageUrl || null,
       note: note,
       date: date,
       rating,

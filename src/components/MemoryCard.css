@@ -91,6 +91,46 @@
   padding: 16px;
 }
 
+.memory-header-alt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.memory-date-alt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.memory-actions-alt {
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.memory-actions-alt .memory-action-btn {
+  background: var(--color-bg);
+  box-shadow: none;
+  border: 1px solid var(--color-border);
+}
+
+.memory-card:hover .memory-actions-alt {
+  opacity: 1;
+}
+
+/* For mobile, make actions always visible or at least when tapped */
+@media (max-width: 768px) {
+  .memory-actions-alt, .memory-actions {
+    opacity: 1;
+  }
+}
+
 .memory-note {
   font-size: 15px;
   line-height: 1.5;

@@ -38,6 +38,22 @@ export default function MemoryCard({ memory, onEdit, onDelete }) {
       )}
       
       <div className="memory-content">
+        {!memory.image_url && (
+          <div className="memory-header-alt">
+            <div className="memory-date-alt">
+              <CalendarDays size={14} />
+              <span>{displayDate}</span>
+            </div>
+            <div className="memory-actions-alt">
+              <button className="memory-action-btn edit-btn" onClick={onEdit} aria-label="Editar">
+                <Edit2 size={16} />
+              </button>
+              <button className="memory-action-btn delete-btn" onClick={onDelete} aria-label="Eliminar">
+                <Trash2 size={16} />
+              </button>
+            </div>
+          </div>
+        )}
         <p className="memory-note">{memory.note}</p>
         
         <div className="memory-footer">
