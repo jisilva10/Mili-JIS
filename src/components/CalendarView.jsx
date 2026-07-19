@@ -13,24 +13,19 @@ import {
   parseISO
 } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, LayoutList } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LayoutList, Plus } from 'lucide-react';
 import './CalendarView.css';
 
-export default function CalendarView({ memories, onMonthSelect }) {
+export default function CalendarView({ memories, onMonthSelect, onAddMemoryClick }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  // Function to get memory for a specific date
   const getMemoryForDate = (date) => {
     return memories.find(m => {
-      // Assuming memory.date is either YYYY-MM-DD or a localized string
-      // Let's try to handle both.
       try {
         let memDate;
         if (m.date.includes('-') && m.date.length === 10) {
           memDate = parseISO(m.date);
         } else {
-          // If it's localized (like '14 Feb 2026'), this might fail with standard parse. 
-          // For now, in our new Supabase DB it will be YYYY-MM-DD format (date type).
           memDate = new Date(m.date);
         }
         return isSameDay(memDate, date);
@@ -61,7 +56,7 @@ export default function CalendarView({ memories, onMonthSelect }) {
 
   const renderDays = () => {
     const days = [];
-    const startDate = startOfWeek(currentMonth, { weekStartsOn: 1 }); // Monday start
+    const startDate = startOfWeek(currentMonth, { weekStartsOn: 1 });
 
     for (let i = 0; i < 7; i++) {
       days.push(
@@ -89,19 +84,27 @@ export default function CalendarView({ memories, onMonthSelect }) {
         formattedDate = format(day, 'd');
         const cloneDay = day;
         const memory = getMemoryForDate(cloneDay);
+        const isCurrentMonth = isSameMonth(cloneDay, monthStart);
         
         days.push(
           <div
             className={`calendar-cell ${
-              !isSameMonth(day, monthStart)
-                ? 'disabled'
-                : memory 
-                  ? 'has-memory' 
-                  : ''
+              !isCurrentMonth ? 'disabled' : memory ? 'has-memory' : ''
             }`}
             key={day}
+            onClick={() => {
+              if (isCurrentMonth && onAddMemoryClick) {
+                // Return YYYY-MM-DD to be consistent with DB
+                onAddMemoryClick(format(cloneDay, 'yyyy-MM-dd'));
+              }
+            }}
           >
             <span className="calendar-date-number">{formattedDate}</span>
+            {isCurrentMonth && (
+              <div className="cell-overlay-btn">
+                <Plus size={16} />
+              </div>
+            )}
             {memory && <div className="memory-indicator"></div>}
           </div>
         );

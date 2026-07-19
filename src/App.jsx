@@ -95,12 +95,11 @@ function App() {
             Cargando...
           </div>
         ) : activeTab === 'memories' ? (
-          <Memories memories={memories} />
+          <Memories memories={memories} addMemory={addMemory} />
         ) : (
           <Wishlist 
             wishlist={wishlist} 
             updateWishlist={updateWishlist} 
-            addMemory={addMemory}
             addWishlistItem={addWishlistItem}
             toggleWishlistItem={toggleWishlistItem}
           />

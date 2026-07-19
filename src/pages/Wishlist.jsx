@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import WishlistItem from '../components/WishlistItem';
-import CompleteDateModal from '../components/CompleteDateModal';
 import './Wishlist.css';
 
-export default function Wishlist({ wishlist, updateWishlist, addMemory, addWishlistItem, toggleWishlistItem }) {
+export default function Wishlist({ wishlist, updateWishlist, addWishlistItem, toggleWishlistItem }) {
   const [newItemText, setNewItemText] = useState('');
-  const [selectedItem, setSelectedItem] = useState(null);
 
   const handleAddItem = async (e) => {
     e.preventDefault();
@@ -15,7 +13,6 @@ export default function Wishlist({ wishlist, updateWishlist, addMemory, addWishl
     if (addWishlistItem) {
       await addWishlistItem(newItemText);
     } else {
-      // Fallback for old way if needed
       const newItem = {
         id: Date.now(),
         text: newItemText,
@@ -32,21 +29,12 @@ export default function Wishlist({ wishlist, updateWishlist, addMemory, addWishl
 
     const isCompleting = !item.completed;
     
-    if (isCompleting) {
-      setSelectedItem(item);
-    }
-
     if (toggleWishlistItem) {
       await toggleWishlistItem(id, isCompleting);
     } else {
       const updated = wishlist.map(i => i.id === id ? { ...i, completed: isCompleting } : i);
       updateWishlist(updated);
     }
-  };
-
-  const handleSaveMemory = (memoryData) => {
-    addMemory(memoryData);
-    setSelectedItem(null);
   };
 
   return (
@@ -85,14 +73,6 @@ export default function Wishlist({ wishlist, updateWishlist, addMemory, addWishl
           ))
         )}
       </div>
-
-      {selectedItem && (
-        <CompleteDateModal 
-          item={selectedItem} 
-          onClose={() => setSelectedItem(null)} 
-          onSave={handleSaveMemory}
-        />
-      )}
     </div>
   );
 }

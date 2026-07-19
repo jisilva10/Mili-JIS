@@ -1,27 +1,29 @@
 import { useState } from 'react';
 import { X, ImagePlus, Star } from 'lucide-react';
-import './CompleteDateModal.css';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import './AddMemoryModal.css';
 
-export default function CompleteDateModal({ item, onClose, onSave }) {
+export default function AddMemoryModal({ date, onClose, onSave }) {
   const [note, setNote] = useState('');
   const [rating, setRating] = useState(5);
   const [repeat, setRepeat] = useState(true);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulate current date
-    const today = new Date().toLocaleDateString('es-ES', { 
-      day: 'numeric', month: 'short', year: 'numeric' 
-    });
     
     onSave({
       image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=600&auto=format&fit=crop', // Placeholder for demo
-      note: note || `Completamos: ${item.text}`,
-      date: today,
+      note: note,
+      date: date, // Keep original Date object or string for App.jsx to handle
       rating,
       repeat
     });
   };
+
+  const displayDate = typeof date === 'object' 
+    ? format(date, "d 'de' MMMM, yyyy", { locale: es })
+    : date;
 
   return (
     <div className="modal-overlay glass">
@@ -30,8 +32,8 @@ export default function CompleteDateModal({ item, onClose, onSave }) {
           <X size={24} />
         </button>
         
-        <h2 className="modal-title">¡Cita Completada! 🎉</h2>
-        <p className="modal-subtitle">Guarda este momento en el Baúl de los Recuerdos</p>
+        <h2 className="modal-title">Nuevo Recuerdo</h2>
+        <p className="modal-subtitle">{displayDate}</p>
         
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="image-upload-placeholder">
@@ -45,6 +47,7 @@ export default function CompleteDateModal({ item, onClose, onSave }) {
             value={note}
             onChange={(e) => setNote(e.target.value)}
             rows={3}
+            required
           ></textarea>
           
           <div className="modal-rating-section">
@@ -79,7 +82,7 @@ export default function CompleteDateModal({ item, onClose, onSave }) {
             </label>
           </div>
           
-          <button type="submit" className="modal-submit-btn">
+          <button type="submit" className="modal-submit-btn" disabled={!note.trim()}>
             Guardar Recuerdo
           </button>
         </form>

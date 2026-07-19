@@ -2,17 +2,28 @@ import { useState, useMemo } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import MemoryCard from '../components/MemoryCard';
 import CalendarView from '../components/CalendarView';
+import AddMemoryModal from '../components/AddMemoryModal';
 import { format, isSameMonth, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import './Memories.css';
 
-export default function Memories({ memories }) {
+export default function Memories({ memories, addMemory }) {
   const [viewMode, setViewMode] = useState('calendar'); // 'calendar' | 'feed'
   const [selectedMonthDate, setSelectedMonthDate] = useState(null);
+  
+  // Modal state
+  const [addingDate, setAddingDate] = useState(null);
 
   const handleMonthSelect = (date) => {
     setSelectedMonthDate(date);
     setViewMode('feed');
+  };
+
+  const handleSaveMemory = (memoryData) => {
+    if (addMemory) {
+      addMemory(memoryData);
+    }
+    setAddingDate(null);
   };
 
   const filteredMemories = useMemo(() => {
@@ -53,13 +64,17 @@ export default function Memories({ memories }) {
       </header>
 
       {viewMode === 'calendar' ? (
-        <CalendarView memories={memories} onMonthSelect={handleMonthSelect} />
+        <CalendarView 
+          memories={memories} 
+          onMonthSelect={handleMonthSelect} 
+          onAddMemoryClick={(date) => setAddingDate(date)}
+        />
       ) : (
         <div className="memories-feed">
           {filteredMemories.length === 0 ? (
             <div className="empty-state">
               <p>No hay recuerdos para este mes.</p>
-              <p>¡Vuelve a la Wishlist y completa algunas citas!</p>
+              <p>¡Agrega recuerdos desde el calendario!</p>
             </div>
           ) : (
             filteredMemories.map((memory) => (
@@ -67,6 +82,14 @@ export default function Memories({ memories }) {
             ))
           )}
         </div>
+      )}
+
+      {addingDate && (
+        <AddMemoryModal 
+          date={addingDate}
+          onClose={() => setAddingDate(null)}
+          onSave={handleSaveMemory}
+        />
       )}
     </div>
   );
