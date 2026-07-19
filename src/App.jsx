@@ -85,6 +85,27 @@ function App() {
     setWishlist(newList);
   };
 
+  const updateMemory = async (id, updatedMemory) => {
+    const memoryData = {
+      image_url: updatedMemory.image,
+      note: updatedMemory.note,
+      date: updatedMemory.date,
+      rating: updatedMemory.rating,
+      repeat: updatedMemory.repeat
+    };
+    const { data, error } = await supabase.from('memories').update(memoryData).eq('id', id).select();
+    if (!error && data) {
+      setMemories(memories.map(m => m.id === id ? data[0] : m).sort((a, b) => new Date(b.date) - new Date(a.date)));
+    }
+  };
+
+  const deleteMemory = async (id) => {
+    const { error } = await supabase.from('memories').delete().eq('id', id);
+    if (!error) {
+      setMemories(memories.filter(m => m.id !== id));
+    }
+  };
+
   const addWishlistItem = async (text) => {
     const { data, error } = await supabase.from('wishlist').insert([{ text }]).select();
     if (!error && data) {
@@ -114,7 +135,14 @@ function App() {
             Cargando...
           </div>
         ) : activeTab === 'memories' ? (
-          <Memories memories={memories} addMemory={addMemory} bannerUrl={bannerUrl} updateBanner={updateBanner} />
+          <Memories 
+            memories={memories} 
+            addMemory={addMemory} 
+            updateMemory={updateMemory}
+            deleteMemory={deleteMemory}
+            bannerUrl={bannerUrl} 
+            updateBanner={updateBanner} 
+          />
         ) : (
           <Wishlist 
             wishlist={wishlist} 

@@ -46,6 +46,47 @@
   box-shadow: var(--shadow-sm);
 }
 
+.memory-date span {
+  font-weight: 600;
+}
+
+.memory-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.memory-card:hover .memory-actions {
+  opacity: 1;
+}
+
+.memory-action-btn {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+  padding: 8px;
+  color: var(--color-text-main);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: all 0.2s ease;
+}
+
+.memory-action-btn:hover {
+  transform: scale(1.1);
+  background: white;
+}
+
+.memory-action-btn.delete-btn {
+  color: #FF3B30;
+}
+
+.memory-action-btn.edit-btn {
+  color: var(--color-primary);
+}
+
 .memory-content {
   padding: 16px;
 }

@@ -11,12 +11,13 @@ import { v4 as uuidv4 } from 'uuid';
 import defaultBannerImg from '../assets/banner.jpg';
 import './Memories.css';
 
-export default function Memories({ memories, addMemory, bannerUrl, updateBanner }) {
+export default function Memories({ memories, addMemory, updateMemory, deleteMemory, bannerUrl, updateBanner }) {
   const [viewMode, setViewMode] = useState('calendar'); // 'calendar' | 'feed'
   const [selectedMonthDate, setSelectedMonthDate] = useState(null);
   
   // Modal states
   const [addingDate, setAddingDate] = useState(null);
+  const [editingMemory, setEditingMemory] = useState(null);
   
   // Banner states
   const fileInputRef = useRef(null);
@@ -29,10 +30,13 @@ export default function Memories({ memories, addMemory, bannerUrl, updateBanner 
   };
 
   const handleSaveMemory = (memoryData) => {
-    if (addMemory) {
+    if (editingMemory && updateMemory) {
+      updateMemory(editingMemory.id, memoryData);
+    } else if (addMemory) {
       addMemory(memoryData);
     }
     setAddingDate(null);
+    setEditingMemory(null);
   };
 
   const onBannerFileChange = (e) => {
@@ -154,16 +158,25 @@ export default function Memories({ memories, addMemory, bannerUrl, updateBanner 
             </div>
           ) : (
             filteredMemories.map((memory) => (
-              <MemoryCard key={memory.id} memory={memory} />
+              <MemoryCard 
+                key={memory.id} 
+                memory={memory} 
+                onEdit={() => setEditingMemory(memory)}
+                onDelete={() => deleteMemory && deleteMemory(memory.id)}
+              />
             ))
           )}
         </div>
       )}
 
-      {addingDate && (
+      {(addingDate || editingMemory) && (
         <AddMemoryModal 
-          date={addingDate}
-          onClose={() => setAddingDate(null)}
+          date={addingDate || (editingMemory && editingMemory.date)}
+          existingMemory={editingMemory}
+          onClose={() => {
+            setAddingDate(null);
+            setEditingMemory(null);
+          }}
           onSave={handleSaveMemory}
         />
       )}

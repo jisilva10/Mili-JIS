@@ -4,18 +4,21 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import './AddMemoryModal.css';
 
-export default function AddMemoryModal({ date, onClose, onSave }) {
-  const [note, setNote] = useState('');
-  const [rating, setRating] = useState(5);
-  const [repeat, setRepeat] = useState(true);
+export default function AddMemoryModal({ date, existingMemory, onClose, onSave }) {
+  const [note, setNote] = useState(existingMemory ? existingMemory.note : '');
+  const [rating, setRating] = useState(existingMemory ? existingMemory.rating : 5);
+  const [repeat, setRepeat] = useState(existingMemory ? existingMemory.repeat : true);
+  
+  // We'll also allow changing the image if needed, but for simplicity we keep it as is, or use the existing image url.
+  const [image, setImage] = useState(existingMemory ? existingMemory.image_url : 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=600&auto=format&fit=crop');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     
     onSave({
-      image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=600&auto=format&fit=crop', // Placeholder for demo
+      image: image,
       note: note,
-      date: date, // Keep original Date object or string for App.jsx to handle
+      date: date,
       rating,
       repeat
     });
@@ -32,7 +35,7 @@ export default function AddMemoryModal({ date, onClose, onSave }) {
           <X size={24} />
         </button>
         
-        <h2 className="modal-title">Nuevo Recuerdo</h2>
+        <h2 className="modal-title">{existingMemory ? "Editar Recuerdo" : "Nuevo Recuerdo"}</h2>
         <p className="modal-subtitle">{displayDate}</p>
         
         <form onSubmit={handleSubmit} className="modal-form">
