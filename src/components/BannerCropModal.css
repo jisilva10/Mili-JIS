@@ -1,0 +1,68 @@
+.crop-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+  background: var(--color-bg);
+}
+
+.crop-modal-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #000; /* Dark background for cropping */
+}
+
+.crop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  z-index: 10;
+}
+
+.crop-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.crop-icon-btn {
+  color: white;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.crop-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.crop-icon-btn.primary {
+  color: var(--color-primary-light);
+}
+
+.crop-container {
+  position: relative;
+  flex: 1;
+}
+
+.crop-controls {
+  padding: 30px 20px;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+}
+
+.zoom-slider {
+  width: 80%;
+  accent-color: var(--color-primary);
+}

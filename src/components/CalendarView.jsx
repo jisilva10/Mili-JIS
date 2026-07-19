@@ -13,7 +13,7 @@ import {
   parseISO
 } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, LayoutList, Plus } from 'lucide-react';
+import { LayoutList, Plus } from 'lucide-react';
 import './CalendarView.css';
 
 export default function CalendarView({ memories, onMonthSelect, onAddMemoryClick }) {
@@ -35,21 +35,27 @@ export default function CalendarView({ memories, onMonthSelect, onAddMemoryClick
     });
   };
 
-  const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
-  const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
+  const handleMonthChange = (e) => {
+    if (e.target.value) {
+      const [year, month] = e.target.value.split('-');
+      setCurrentMonth(new Date(year, parseInt(month) - 1, 1));
+    }
+  };
 
   const renderHeader = () => {
     return (
-      <div className="calendar-header">
-        <button onClick={prevMonth} className="calendar-nav-btn">
-          <ChevronLeft size={24} />
-        </button>
-        <h2 className="calendar-month-title">
-          {format(currentMonth, 'MMMM yyyy', { locale: es })}
-        </h2>
-        <button onClick={nextMonth} className="calendar-nav-btn">
-          <ChevronRight size={24} />
-        </button>
+      <div className="calendar-header centered">
+        <label className="month-picker-label">
+          <h2 className="calendar-month-title">
+            {format(currentMonth, 'MMMM yyyy', { locale: es })}
+          </h2>
+          <input 
+            type="month" 
+            className="month-picker-input"
+            value={format(currentMonth, 'yyyy-MM')}
+            onChange={handleMonthChange}
+          />
+        </label>
       </div>
     );
   };

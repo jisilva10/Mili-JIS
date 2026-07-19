@@ -6,6 +6,26 @@
   border-bottom-right-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   transition: all 0.3s ease;
+  position: relative;
+}
+
+.edit-banner-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--color-primary);
+  padding: 10px;
+  border-radius: 50%;
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(4px);
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.edit-banner-btn:hover {
+  background: white;
+  transform: scale(1.05);
 }
 
 .banner-image {
@@ -70,7 +90,7 @@
 
 .memories-page.no-scroll .hero-banner {
   flex-shrink: 0;
-  height: clamp(100px, 15vh, 160px);
+  height: clamp(140px, 22vh, 200px); /* Taller banner as requested */
   margin-bottom: 16px;
 }
 

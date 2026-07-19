@@ -1,19 +1,27 @@
-import { useState, useMemo } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { useState, useMemo, useRef } from 'react';
+import { ArrowLeft, Camera } from 'lucide-react';
 import MemoryCard from '../components/MemoryCard';
 import CalendarView from '../components/CalendarView';
 import AddMemoryModal from '../components/AddMemoryModal';
+import BannerCropModal from '../components/BannerCropModal';
 import { format, isSameMonth, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import bannerImg from '../assets/banner.jpg';
+import { supabase } from '../supabaseClient';
+import { v4 as uuidv4 } from 'uuid';
+import defaultBannerImg from '../assets/banner.jpg';
 import './Memories.css';
 
-export default function Memories({ memories, addMemory }) {
+export default function Memories({ memories, addMemory, bannerUrl, updateBanner }) {
   const [viewMode, setViewMode] = useState('calendar'); // 'calendar' | 'feed'
   const [selectedMonthDate, setSelectedMonthDate] = useState(null);
   
-  // Modal state
+  // Modal states
   const [addingDate, setAddingDate] = useState(null);
+  
+  // Banner states
+  const fileInputRef = useRef(null);
+  const [selectedBannerImage, setSelectedBannerImage] = useState(null);
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false);
 
   const handleMonthSelect = (date) => {
     setSelectedMonthDate(date);
@@ -25,6 +33,49 @@ export default function Memories({ memories, addMemory }) {
       addMemory(memoryData);
     }
     setAddingDate(null);
+  };
+
+  const onBannerFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const imageUrl = URL.createObjectURL(file);
+      setSelectedBannerImage(imageUrl);
+    }
+    // reset input
+    e.target.value = null;
+  };
+
+  const handleCropComplete = async (croppedBlob) => {
+    if (!croppedBlob) return;
+    setIsUploadingBanner(true);
+    
+    try {
+      const fileName = `${uuidv4()}.jpg`;
+      const { data, error } = await supabase.storage
+        .from('assets')
+        .upload(fileName, croppedBlob, {
+          contentType: 'image/jpeg',
+          upsert: true
+        });
+
+      if (error) {
+        console.error("Error uploading banner:", error);
+        alert("Asegúrate de haber creado el bucket 'assets' público en Supabase.");
+      } else {
+        const { data: publicUrlData } = supabase.storage
+          .from('assets')
+          .getPublicUrl(fileName);
+
+        if (publicUrlData && updateBanner) {
+          await updateBanner(publicUrlData.publicUrl);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsUploadingBanner(false);
+      setSelectedBannerImage(null);
+    }
   };
 
   const filteredMemories = useMemo(() => {
@@ -43,7 +94,27 @@ export default function Memories({ memories, addMemory }) {
   return (
     <div className={`memories-page ${viewMode === 'calendar' ? 'no-scroll' : ''}`}>
       <div className="hero-banner">
-        <img src={bannerImg} alt="Nuestra Historia" className="banner-image" />
+        <img 
+          src={bannerUrl || defaultBannerImg} 
+          alt="Nuestra Historia" 
+          className="banner-image" 
+          style={{ opacity: isUploadingBanner ? 0.5 : 1 }}
+        />
+        <button 
+          className="edit-banner-btn"
+          onClick={() => fileInputRef.current?.click()}
+          aria-label="Cambiar foto de banner"
+          disabled={isUploadingBanner}
+        >
+          <Camera size={20} />
+        </button>
+        <input 
+          type="file" 
+          accept="image/*" 
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={onBannerFileChange}
+        />
       </div>
 
       <header className="page-header">
@@ -94,6 +165,14 @@ export default function Memories({ memories, addMemory }) {
           date={addingDate}
           onClose={() => setAddingDate(null)}
           onSave={handleSaveMemory}
+        />
+      )}
+
+      {selectedBannerImage && (
+        <BannerCropModal 
+          imageSrc={selectedBannerImage} 
+          onClose={() => setSelectedBannerImage(null)}
+          onCropCompleteHandler={handleCropComplete}
         />
       )}
     </div>

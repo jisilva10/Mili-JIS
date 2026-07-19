@@ -10,6 +10,7 @@ function App() {
   const [memories, setMemories] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [bannerUrl, setBannerUrl] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -18,17 +19,28 @@ function App() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [memoriesRes, wishlistRes] = await Promise.all([
+      const [memoriesRes, wishlistRes, settingsRes] = await Promise.all([
         supabase.from('memories').select('*').order('date', { ascending: false }),
-        supabase.from('wishlist').select('*').order('created_at', { ascending: false })
+        supabase.from('wishlist').select('*').order('created_at', { ascending: false }),
+        supabase.from('app_settings').select('*').eq('id', 1).single()
       ]);
       
       if (memoriesRes.data) setMemories(memoriesRes.data);
       if (wishlistRes.data) setWishlist(wishlistRes.data);
+      if (settingsRes.data && settingsRes.data.banner_url) {
+        setBannerUrl(settingsRes.data.banner_url);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const updateBanner = async (newUrl) => {
+    const { error } = await supabase.from('app_settings').upsert({ id: 1, banner_url: newUrl });
+    if (!error) {
+      setBannerUrl(newUrl);
     }
   };
 
@@ -102,7 +114,7 @@ function App() {
             Cargando...
           </div>
         ) : activeTab === 'memories' ? (
-          <Memories memories={memories} addMemory={addMemory} />
+          <Memories memories={memories} addMemory={addMemory} bannerUrl={bannerUrl} updateBanner={updateBanner} />
         ) : (
           <Wishlist 
             wishlist={wishlist} 

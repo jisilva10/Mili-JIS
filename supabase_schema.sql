@@ -31,3 +31,16 @@ CREATE POLICY "Enable read access for all users" ON wishlist FOR SELECT USING (t
 CREATE POLICY "Enable insert access for all users" ON wishlist FOR INSERT WITH CHECK (true);
 CREATE POLICY "Enable update access for all users" ON wishlist FOR UPDATE USING (true);
 CREATE POLICY "Enable delete access for all users" ON wishlist FOR DELETE USING (true);
+
+-- Settings Table for Banner URL
+CREATE TABLE app_settings (
+  id integer PRIMARY KEY DEFAULT 1,
+  banner_url text
+);
+
+-- Insert default row
+INSERT INTO app_settings (id, banner_url) VALUES (1, null);
+
+ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Enable all access for all users" ON app_settings FOR ALL USING (true) WITH CHECK (true);
+

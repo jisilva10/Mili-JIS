@@ -26,24 +26,39 @@
   margin-bottom: 20px;
 }
 
+.calendar-header.centered {
+  justify-content: center;
+}
+
+.month-picker-label {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: var(--radius-md);
+  transition: background 0.2s;
+}
+
+.month-picker-label:hover {
+  background: var(--color-border);
+}
+
+.month-picker-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
 .calendar-month-title {
   font-size: 18px;
   font-weight: 700;
   text-transform: capitalize;
   color: var(--color-text-main);
-}
-
-.calendar-nav-btn {
-  padding: 8px;
-  border-radius: 50%;
-  color: var(--color-text-muted);
-  background: var(--color-bg);
-  transition: all 0.2s ease;
-}
-
-.calendar-nav-btn:hover {
-  background: var(--color-border);
-  color: var(--color-text-main);
+  margin: 0;
 }
 
 .calendar-days-row {
