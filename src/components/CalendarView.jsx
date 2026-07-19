@@ -13,7 +13,7 @@ import {
   parseISO
 } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Plus } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import './CalendarView.css';
 
 export default function CalendarView({ memories, onAddMemoryClick, onEditMemoryClick }) {
@@ -42,9 +42,20 @@ export default function CalendarView({ memories, onAddMemoryClick, onEditMemoryC
     }
   };
 
+  const handlePrevMonth = () => {
+    setCurrentMonth(subMonths(currentMonth, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentMonth(addMonths(currentMonth, 1));
+  };
+
   const renderHeader = () => {
     return (
       <div className="calendar-header centered">
+        <button className="calendar-nav-arrow" onClick={handlePrevMonth} aria-label="Mes anterior">
+          <ChevronLeft size={24} />
+        </button>
         <label className="month-picker-label">
           <h2 className="calendar-month-title">
             {format(currentMonth, 'MMMM yyyy', { locale: es })}
@@ -56,6 +67,9 @@ export default function CalendarView({ memories, onAddMemoryClick, onEditMemoryC
             onChange={handleMonthChange}
           />
         </label>
+        <button className="calendar-nav-arrow" onClick={handleNextMonth} aria-label="Mes siguiente">
+          <ChevronRight size={24} />
+        </button>
       </div>
     );
   };

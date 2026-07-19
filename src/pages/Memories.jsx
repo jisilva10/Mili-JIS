@@ -6,6 +6,7 @@ import AddMemoryModal from '../components/AddMemoryModal';
 import BannerCropModal from '../components/BannerCropModal';
 import { supabase } from '../supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
+import imageCompression from 'browser-image-compression';
 import defaultBannerImg from '../assets/banner.jpg';
 import './Memories.css';
 
@@ -18,6 +19,10 @@ export default function Memories({ activeTab, memories, addMemory, updateMemory,
   const fileInputRef = useRef(null);
   const [selectedBannerImage, setSelectedBannerImage] = useState(null);
   const [isUploadingBanner, setIsUploadingBanner] = useState(false);
+
+  // Filter states
+  const [filterYear, setFilterYear] = useState('all');
+  const [filterMonth, setFilterMonth] = useState('all');
 
   const handleSaveMemory = (memoryData) => {
     if (editingMemory && updateMemory) {
@@ -43,10 +48,21 @@ export default function Memories({ activeTab, memories, addMemory, updateMemory,
     setIsUploadingBanner(true);
     
     try {
+      const options = {
+        maxSizeMB: 0.8,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+        fileType: 'image/jpeg'
+      };
+      
+      // Convert Blob to File to use with imageCompression
+      const fileToCompress = new File([croppedBlob], "banner.jpg", { type: "image/jpeg" });
+      const compressedFile = await imageCompression(fileToCompress, options);
+
       const fileName = `${uuidv4()}.jpg`;
       const { data, error } = await supabase.storage
         .from('assets')
-        .upload(fileName, croppedBlob, {
+        .upload(fileName, compressedFile, {
           contentType: 'image/jpeg',
           upsert: true
         });
@@ -71,10 +87,27 @@ export default function Memories({ activeTab, memories, addMemory, updateMemory,
     }
   };
 
-  // Group memories by year
+  // Group and filter memories
   const groupedMemories = useMemo(() => {
     const groups = {};
-    memories.forEach(m => {
+    
+    // First, filter memories
+    const filtered = memories.filter(m => {
+      try {
+        const d = m.date.includes('-') ? new Date(m.date + 'T00:00:00') : new Date(m.date);
+        const y = d.getFullYear();
+        const mo = d.getMonth(); // 0-11
+        
+        if (filterYear !== 'all' && y.toString() !== filterYear) return false;
+        if (filterMonth !== 'all' && mo.toString() !== filterMonth) return false;
+        
+        return true;
+      } catch (e) {
+        return true;
+      }
+    });
+
+    filtered.forEach(m => {
       let year;
       try {
         const d = m.date.includes('-') ? new Date(m.date + 'T00:00:00') : new Date(m.date);
@@ -94,7 +127,25 @@ export default function Memories({ activeTab, memories, addMemory, updateMemory,
         year,
         items: groups[year]
       }));
+  }, [memories, filterYear, filterMonth]);
+
+  // Extract available years for the filter dropdown
+  const availableYears = useMemo(() => {
+    const years = new Set();
+    memories.forEach(m => {
+      try {
+        const d = m.date.includes('-') ? new Date(m.date + 'T00:00:00') : new Date(m.date);
+        const y = d.getFullYear();
+        if (!isNaN(y)) years.add(y);
+      } catch (e) {}
+    });
+    return Array.from(years).sort((a, b) => b - a);
   }, [memories]);
+
+  const monthNames = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
 
   return (
     <div className={`memories-page ${activeTab === 'calendar' ? 'no-scroll' : ''}`}>
@@ -135,6 +186,30 @@ export default function Memories({ activeTab, memories, addMemory, updateMemory,
         />
       ) : (
         <div className="memories-feed">
+          <div className="feed-filters glass">
+            <select 
+              value={filterYear} 
+              onChange={(e) => setFilterYear(e.target.value)}
+              className="filter-select"
+            >
+              <option value="all">Todos los años</option>
+              {availableYears.map(y => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+            
+            <select 
+              value={filterMonth} 
+              onChange={(e) => setFilterMonth(e.target.value)}
+              className="filter-select"
+            >
+              <option value="all">Todos los meses</option>
+              {monthNames.map((name, index) => (
+                <option key={index} value={index}>{name}</option>
+              ))}
+            </select>
+          </div>
+
           {groupedMemories.length === 0 ? (
             <div className="empty-state">
               <p>No hay recuerdos guardados aún.</p>

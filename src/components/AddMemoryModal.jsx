@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { supabase } from '../supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
+import imageCompression from 'browser-image-compression';
 import './AddMemoryModal.css';
 
 export default function AddMemoryModal({ date, existingMemory, onClose, onSave }) {
@@ -31,21 +32,33 @@ export default function AddMemoryModal({ date, existingMemory, onClose, onSave }
     let finalImageUrl = imagePreview; // keep existing if no new file
 
     if (imageFile) {
-      const fileName = `memories/${uuidv4()}.jpg`;
-      const { error } = await supabase.storage
-        .from('assets')
-        .upload(fileName, imageFile, {
-          contentType: imageFile.type,
-          upsert: true
-        });
-      
-      if (!error) {
-        const { data } = supabase.storage.from('assets').getPublicUrl(fileName);
-        if (data) {
-          finalImageUrl = data.publicUrl;
+      try {
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
+          fileType: 'image/jpeg'
+        };
+        const compressedFile = await imageCompression(imageFile, options);
+        
+        const fileName = `memories/${uuidv4()}.jpg`;
+        const { error } = await supabase.storage
+          .from('assets')
+          .upload(fileName, compressedFile, {
+            contentType: 'image/jpeg',
+            upsert: true
+          });
+        
+        if (!error) {
+          const { data } = supabase.storage.from('assets').getPublicUrl(fileName);
+          if (data) {
+            finalImageUrl = data.publicUrl;
+          }
+        } else {
+          alert("Asegúrate de haber creado el bucket 'assets' público en Supabase.");
         }
-      } else {
-        alert("Asegúrate de haber creado el bucket 'assets' público en Supabase.");
+      } catch (err) {
+        console.error("Error compressing or uploading image:", err);
       }
     }
 

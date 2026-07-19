@@ -27,7 +27,25 @@
 }
 
 .calendar-header.centered {
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.calendar-nav-arrow {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
   justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.calendar-nav-arrow:hover {
+  background-color: var(--color-border);
 }
 
 .month-picker-label {
