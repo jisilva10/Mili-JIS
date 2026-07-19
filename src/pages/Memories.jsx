@@ -49,8 +49,8 @@ export default function Memories({ activeTab, memories, addMemory, updateMemory,
     
     try {
       const options = {
-        maxSizeMB: 0.8,
-        maxWidthOrHeight: 1920,
+        maxSizeMB: 0.3,
+        maxWidthOrHeight: 1080,
         useWebWorker: true,
         fileType: 'image/jpeg'
       };

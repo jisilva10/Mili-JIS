@@ -34,8 +34,8 @@ export default function AddMemoryModal({ date, existingMemory, onClose, onSave }
     if (imageFile) {
       try {
         const options = {
-          maxSizeMB: 1,
-          maxWidthOrHeight: 1920,
+          maxSizeMB: 0.2,
+          maxWidthOrHeight: 1080,
           useWebWorker: true,
           fileType: 'image/jpeg'
         };
