@@ -4,44 +4,48 @@ import WishlistItem from '../components/WishlistItem';
 import CompleteDateModal from '../components/CompleteDateModal';
 import './Wishlist.css';
 
-export default function Wishlist({ wishlist, updateWishlist, addMemory }) {
+export default function Wishlist({ wishlist, updateWishlist, addMemory, addWishlistItem, toggleWishlistItem }) {
   const [newItemText, setNewItemText] = useState('');
-  const [selectedItem, setSelectedItem] = useState(null); // Item being completed
+  const [selectedItem, setSelectedItem] = useState(null);
 
-  const handleAddItem = (e) => {
+  const handleAddItem = async (e) => {
     e.preventDefault();
     if (!newItemText.trim()) return;
     
-    const newItem = {
-      id: Date.now(),
-      text: newItemText,
-      completed: false
-    };
-    
-    updateWishlist([newItem, ...wishlist]);
+    if (addWishlistItem) {
+      await addWishlistItem(newItemText);
+    } else {
+      // Fallback for old way if needed
+      const newItem = {
+        id: Date.now(),
+        text: newItemText,
+        completed: false
+      };
+      updateWishlist([newItem, ...wishlist]);
+    }
     setNewItemText('');
   };
 
-  const handleToggleComplete = (id) => {
-    const updated = wishlist.map(item => {
-      if (item.id === id) {
-        const isCompleting = !item.completed;
-        if (isCompleting) {
-          setSelectedItem(item);
-        }
-        return { ...item, completed: isCompleting };
-      }
-      return item;
-    });
-    updateWishlist(updated);
+  const handleToggleComplete = async (id) => {
+    const item = wishlist.find(i => i.id === id);
+    if (!item) return;
+
+    const isCompleting = !item.completed;
+    
+    if (isCompleting) {
+      setSelectedItem(item);
+    }
+
+    if (toggleWishlistItem) {
+      await toggleWishlistItem(id, isCompleting);
+    } else {
+      const updated = wishlist.map(i => i.id === id ? { ...i, completed: isCompleting } : i);
+      updateWishlist(updated);
+    }
   };
 
   const handleSaveMemory = (memoryData) => {
-    addMemory({
-      ...memoryData,
-      id: Date.now(),
-    });
-    // Remove from wishlist or keep it as completed? Usually keep it or remove. Let's keep it as completed.
+    addMemory(memoryData);
     setSelectedItem(null);
   };
 
