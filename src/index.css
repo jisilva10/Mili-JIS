@@ -1,0 +1,115 @@
+:root {
+  /* Color Palette - Premium Light Mode (Warm & Inviting) */
+  --color-bg: #FCFBF9; /* Soft off-white */
+  --color-surface: #FFFFFF;
+  --color-surface-glass: rgba(255, 255, 255, 0.85);
+  
+  --color-primary: #FF8A65; /* Peach/Coral */
+  --color-primary-light: #FFAB91;
+  --color-primary-transparent: rgba(255, 138, 101, 0.15);
+  
+  --color-text-main: #2C2C2C;
+  --color-text-muted: #8E8E93;
+  --color-text-inverse: #FFFFFF;
+  
+  --color-border: #EFEFEF;
+  --color-success: #34C759;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.08);
+  --shadow-primary: 0 8px 20px rgba(255, 138, 101, 0.25);
+  
+  /* Radii */
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  outline: none;
+}
+
+input, textarea {
+  font-family: inherit;
+  outline: none;
+}
+
+/* Animations */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* App Shell container (for centering on desktop, full width on mobile) */
+.app-container {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  background-color: var(--color-bg);
+  box-shadow: 0 0 50px rgba(0,0,0,0.05); /* Only visible on desktop */
+}
+
+/* Main Content Area */
+.main-content {
+  padding: 24px 20px 100px 20px; /* Space for bottom nav */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography Utilities */
+.text-title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+.text-subtitle {
+  font-size: 16px;
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
