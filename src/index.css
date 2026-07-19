@@ -114,29 +114,3 @@ input, textarea {
   font-weight: 400;
 }
 
-/* Bloquear vista horizontal en celulares */
-@media screen and (max-height: 600px) and (orientation: landscape) {
-  #root {
-    display: none !important;
-  }
-  
-  body::before {
-    content: "📱 Por favor, gira tu teléfono a modo vertical para usar la aplicación.";
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 100vw;
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--color-primary);
-    background: var(--color-bg);
-    padding: 40px;
-    z-index: 9999;
-    box-sizing: border-box;
-  }
-}
