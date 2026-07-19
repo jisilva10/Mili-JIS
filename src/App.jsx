@@ -87,6 +87,13 @@ function App() {
     }
   };
 
+  const deleteWishlistItem = async (id) => {
+    const { error } = await supabase.from('wishlist').delete().eq('id', id);
+    if (!error) {
+      setWishlist(wishlist.filter(item => item.id !== id));
+    }
+  };
+
   return (
     <div className="app-container">
       <main className="main-content">
@@ -102,6 +109,7 @@ function App() {
             updateWishlist={updateWishlist} 
             addWishlistItem={addWishlistItem}
             toggleWishlistItem={toggleWishlistItem}
+            deleteWishlistItem={deleteWishlistItem}
           />
         )}
       </main>

@@ -1,7 +1,7 @@
-import { Check } from 'lucide-react';
+import { Check, Trash2 } from 'lucide-react';
 import './WishlistItem.css';
 
-export default function WishlistItem({ item, onToggle }) {
+export default function WishlistItem({ item, onToggle, onDelete }) {
   return (
     <div className={`wishlist-item ${item.completed ? 'completed' : ''}`}>
       <button 
@@ -14,6 +14,13 @@ export default function WishlistItem({ item, onToggle }) {
         </div>
       </button>
       <span className="wishlist-text">{item.text}</span>
+      <button 
+        className="wishlist-delete-btn" 
+        onClick={onDelete}
+        aria-label="Eliminar idea"
+      >
+        <Trash2 size={18} />
+      </button>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { Plus } from 'lucide-react';
 import WishlistItem from '../components/WishlistItem';
 import './Wishlist.css';
 
-export default function Wishlist({ wishlist, updateWishlist, addWishlistItem, toggleWishlistItem }) {
+export default function Wishlist({ wishlist, updateWishlist, addWishlistItem, toggleWishlistItem, deleteWishlistItem }) {
   const [newItemText, setNewItemText] = useState('');
 
   const handleAddItem = async (e) => {
@@ -33,6 +33,15 @@ export default function Wishlist({ wishlist, updateWishlist, addWishlistItem, to
       await toggleWishlistItem(id, isCompleting);
     } else {
       const updated = wishlist.map(i => i.id === id ? { ...i, completed: isCompleting } : i);
+      updateWishlist(updated);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (deleteWishlistItem) {
+      await deleteWishlistItem(id);
+    } else {
+      const updated = wishlist.filter(i => i.id !== id);
       updateWishlist(updated);
     }
   };
@@ -68,7 +77,8 @@ export default function Wishlist({ wishlist, updateWishlist, addWishlistItem, to
             <WishlistItem 
               key={item.id} 
               item={item} 
-              onToggle={() => handleToggleComplete(item.id)} 
+              onToggle={() => handleToggleComplete(item.id)}
+              onDelete={() => handleDelete(item.id)}
             />
           ))
         )}
