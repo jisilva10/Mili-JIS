@@ -1,0 +1,19 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # Runs at 12:00 UTC on Mondays and Thursdays
+    - cron: '0 12 * * 1,4'
+  workflow_dispatch:
+
+jobs:
+  ping-database:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST API
+        run: |
+          echo "Haciendo ping a Supabase para evitar que entre en pausa..."
+          curl -s -X GET "https://hycylxqmiakyqnzfzgqw.supabase.co/rest/v1/memories?select=id&limit=1" \
+          -H "apikey: sb_publishable_VdUEF0yunji7nhng9DUi3g_wUk_lpm2" \
+          -H "Authorization: Bearer sb_publishable_VdUEF0yunji7nhng9DUi3g_wUk_lpm2"
+          echo -e "\n¡Ping completado!"
