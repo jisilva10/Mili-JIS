@@ -129,24 +129,29 @@ function App() {
           <div style={{ textAlign: 'center', marginTop: '40px', color: 'var(--color-text-muted)' }}>
             Cargando...
           </div>
-        ) : activeTab === 'calendar' || activeTab === 'feed' ? (
-          <Memories 
-            activeTab={activeTab}
-            memories={memories} 
-            addMemory={addMemory} 
-            updateMemory={updateMemory}
-            deleteMemory={deleteMemory}
-            bannerUrl={bannerUrl} 
-            updateBanner={updateBanner} 
-          />
         ) : (
-          <Wishlist 
-            wishlist={wishlist} 
-            updateWishlist={updateWishlist} 
-            addWishlistItem={addWishlistItem}
-            toggleWishlistItem={toggleWishlistItem}
-            deleteWishlistItem={deleteWishlistItem}
-          />
+          <>
+            <div style={{ display: (activeTab === 'calendar' || activeTab === 'feed') ? 'block' : 'none', height: '100%' }}>
+              <Memories 
+                activeTab={activeTab}
+                memories={memories} 
+                addMemory={addMemory} 
+                updateMemory={updateMemory}
+                deleteMemory={deleteMemory}
+                bannerUrl={bannerUrl} 
+                updateBanner={updateBanner} 
+              />
+            </div>
+            <div style={{ display: activeTab === 'wishlist' ? 'block' : 'none', height: '100%' }}>
+              <Wishlist 
+                wishlist={wishlist} 
+                updateWishlist={updateWishlist} 
+                addWishlistItem={addWishlistItem}
+                toggleWishlistItem={toggleWishlistItem}
+                deleteWishlistItem={deleteWishlistItem}
+              />
+            </div>
+          </>
         )}
       </main>
       
