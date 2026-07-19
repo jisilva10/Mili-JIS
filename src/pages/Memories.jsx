@@ -41,7 +41,7 @@ export default function Memories({ memories, addMemory }) {
   }, [memories, viewMode, selectedMonthDate]);
 
   return (
-    <div className="memories-page">
+    <div className={`memories-page ${viewMode === 'calendar' ? 'no-scroll' : ''}`}>
       <div className="hero-banner">
         <img src={bannerImg} alt="Nuestra Historia" className="banner-image" />
       </div>
