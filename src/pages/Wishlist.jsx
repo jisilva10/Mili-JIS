@@ -41,7 +41,7 @@ export default function Wishlist({ wishlist, updateWishlist, addWishlistItem, to
     <div className="wishlist-page">
       <header className="page-header">
         <h1 className="text-title">Wishlist de Citas</h1>
-        <p className="text-subtitle">Nuestras próximas aventuras juntos 🚀</p>
+        <p className="text-subtitle">Nuestras próximas aventuras juntos</p>
       </header>
 
       <form className="add-item-form" onSubmit={handleAddItem}>

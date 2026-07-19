@@ -9,7 +9,7 @@ export default function BottomNav({ activeTab, setActiveTab }) {
         onClick={() => setActiveTab('memories')}
       >
         <BookHeart size={24} className="nav-icon" />
-        <span className="nav-label">Recuerdos</span>
+        <span className="nav-label">Historia</span>
       </button>
       
       <button 

@@ -5,6 +5,7 @@ import CalendarView from '../components/CalendarView';
 import AddMemoryModal from '../components/AddMemoryModal';
 import { format, isSameMonth, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
+import bannerImg from '../assets/banner.jpg';
 import './Memories.css';
 
 export default function Memories({ memories, addMemory }) {
@@ -41,6 +42,10 @@ export default function Memories({ memories, addMemory }) {
 
   return (
     <div className="memories-page">
+      <div className="hero-banner">
+        <img src={bannerImg} alt="Nuestra Historia" className="banner-image" />
+      </div>
+
       <header className="page-header">
         {viewMode === 'feed' ? (
           <div className="feed-header">
@@ -52,13 +57,13 @@ export default function Memories({ memories, addMemory }) {
               <span>Volver al Calendario</span>
             </button>
             <h1 className="text-title" style={{ marginTop: '12px' }}>
-              {selectedMonthDate ? format(selectedMonthDate, 'MMMM yyyy', { locale: es }) : 'Recuerdos'}
+              {selectedMonthDate ? format(selectedMonthDate, 'MMMM yyyy', { locale: es }) : 'Historia'}
             </h1>
           </div>
         ) : (
           <>
-            <h1 className="text-title">El Baúl de los Recuerdos</h1>
-            <p className="text-subtitle">Nuestra historia, un momento a la vez ✨</p>
+            <h1 className="text-title">Nuestra Historia</h1>
+            <p className="text-subtitle">Cada momento cuenta</p>
           </>
         )}
       </header>
